@@ -1,0 +1,22 @@
+{
+  "name": "patients-on-fire",
+  "version": "1.0.0",
+  "description": "PatientsOnFIRE - A distributed system for managing FHIR Patient resources with REST API",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js",
+    "test": "node server/test.js"
+  },
+  "keywords": ["FHIR", "Patient", "REST", "API", "Distributed Systems"],
+  "author": "UFCSPA Students",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

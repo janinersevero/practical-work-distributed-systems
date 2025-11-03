@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUDEPatients - PatientsOnFIRE Client</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>CRUDE Patients</h1>
+            <p>Create, Read, Update and Delete Patients - PatientsOnFIRE System</p>
+        </header>
+
+        <main>
+            <div class="tabs">
+                <button class="tab-button active" onclick="showTab('list')">Lista de Pacientes</button>
+                <button class="tab-button" onclick="showTab('create')">Criar Paciente</button>
+                <button class="tab-button" onclick="showTab('search')">Buscar Paciente</button>
+                <button class="tab-button" onclick="showTab('json')">Editor JSON</button>
+            </div>
+
+            <div id="list-tab" class="tab-content active">
+                <h2>Lista de Pacientes</h2>
+                <button onclick="loadPatientList()" class="btn btn-primary">Atualizar Lista</button>
+                <div id="patient-list">
+                    <p>Carregando lista de pacientes...</p>
+                </div>
+            </div>
+
+            <div id="create-tab" class="tab-content">
+                <h2>Criar Novo Paciente</h2>
+                <form id="patient-form" onsubmit="createPatient(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="given">Nome:</label>
+                            <input type="text" id="given" name="given" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="family">Sobrenome:</label>
+                            <input type="text" id="family" name="family" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="gender">Gênero:</label>
+                            <select id="gender" name="gender" required>
+                                <option value="">Selecione...</option>
+                                <option value="male">Masculino</option>
+                                <option value="female">Feminino</option>
+                                <option value="other">Outro</option>
+                                <option value="unknown">Não informado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="birthDate">Data de Nascimento:</label>
+                            <input type="date" id="birthDate" name="birthDate">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Telefone:</label>
+                            <input type="tel" id="phone" name="phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Endereço:</label>
+                        <textarea id="address" name="address" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="active" name="active" checked>
+                            Registro ativo
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Criar Paciente</button>
+                    <button type="reset" class="btn btn-secondary">Limpar Formulário</button>
+                </form>
+            </div>
+
+            <div id="search-tab" class="tab-content">
+                <h2>Buscar e Gerenciar Pacientes</h2>
+                <div class="search-section">
+                    <div class="form-group">
+                        <label for="patient-id">ID do Paciente:</label>
+                        <input type="number" id="patient-id" min="1" placeholder="Digite o ID do paciente">
+                        <button onclick="searchPatient()" class="btn btn-primary">Buscar</button>
+                    </div>
+                </div>
+
+                <div id="patient-details" class="patient-details" style="display: none;">
+                    <h3>Detalhes do Paciente</h3>
+                    <div id="patient-info"></div>
+                    <div class="patient-actions">
+                        <button onclick="editPatient()" class="btn btn-warning">Editar</button>
+                        <button onclick="deletePatient()" class="btn btn-danger">Excluir</button>
+                    </div>
+                </div>
+
+                <div id="edit-form" class="edit-form" style="display: none;">
+                    <h3>Editar Paciente</h3>
+                    <form id="edit-patient-form" onsubmit="updatePatient(event)">
+                        <input type="hidden" id="edit-id">
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="edit-given">Nome:</label>
+                                <input type="text" id="edit-given" name="given" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-family">Sobrenome:</label>
+                                <input type="text" id="edit-family" name="family" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="edit-gender">Gênero:</label>
+                                <select id="edit-gender" name="gender" required>
+                                    <option value="male">Masculino</option>
+                                    <option value="female">Feminino</option>
+                                    <option value="other">Outro</option>
+                                    <option value="unknown">Não informado</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-birthDate">Data de Nascimento:</label>
+                                <input type="date" id="edit-birthDate" name="birthDate">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="edit-phone">Telefone:</label>
+                                <input type="tel" id="edit-phone" name="phone">
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-email">Email:</label>
+                                <input type="email" id="edit-email" name="email">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit-address">Endereço:</label>
+                            <textarea id="edit-address" name="address" rows="3"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="edit-active" name="active">
+                                Registro ativo
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                        <button type="button" onclick="cancelEdit()" class="btn btn-secondary">Cancelar</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="json-tab" class="tab-content">
+                <h2>Editor JSON</h2>
+                <p>Crie ou edite pacientes usando JSON diretamente conforme a especificação FHIR v5.0.0</p>
+
+                <div class="json-section">
+                    <h3>Template FHIR Patient</h3>
+                    <button onclick="loadTemplate()" class="btn btn-secondary">Carregar Template</button>
+                    <button onclick="loadPatientJson()" class="btn btn-primary">Carregar Paciente Existente</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="json-patient-id">ID do Paciente (para carregar existente):</label>
+                    <input type="number" id="json-patient-id" min="1" placeholder="Digite o ID">
+                </div>
+
+                <div class="form-group">
+                    <label for="json-editor">JSON do Paciente:</label>
+                    <textarea id="json-editor" rows="20" placeholder="Cole ou digite o JSON do paciente aqui..."></textarea>
+                </div>
+
+                <div class="json-actions">
+                    <button onclick="createFromJson()" class="btn btn-success">Criar Paciente</button>
+                    <button onclick="updateFromJson()" class="btn btn-warning">Atualizar Paciente</button>
+                    <button onclick="validateJson()" class="btn btn-info">Validar JSON</button>
+                    <button onclick="formatJson()" class="btn btn-secondary">Formatar JSON</button>
+                </div>
+            </div>
+        </main>
+
+        <div id="messages" class="messages"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
