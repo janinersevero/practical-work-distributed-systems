@@ -1,15 +1,11 @@
 # PatientsOnFIRE - Sistema Distribuído de Gerenciamento de Pacientes
 
-**Trabalho Prático de Sistemas Distribuídos - UFCSPA**  
-**Disciplina:** Fundamento de Redes e Sistemas Distribuídos - 2025/02  
-**Professor:** João Gluz
+**Trabalho Prático de Sistemas Distribuídos - UFCSPA** 
+**Disciplina:** Fundamento de Redes e Sistemas Distribuídos - 2025/02 
 
 ## Visão Geral
 
-O PatientsOnFIRE (Patients On FHIR Information Retrieval Environment) é um sistema distribuído cliente/servidor projetado para gerenciar registros de pacientes seguindo o padrão HL7 FHIR v5.0.0. O sistema é composto por:
-
-1. **Servidor PatientsOnFIRE**: API REST implementada em Node.js que oferece operações CRUD sobre recursos Patient
-2. **Cliente CRUDEPatients**: Interface web HTML/JavaScript para interação com o servidor
+O PatientsOnFIRE (Patients On FHIR Information Retrieval Environment) é um sistema distribuído cliente/servidor projetado para gerenciar registros de pacientes seguindo o padrão HL7 FHIR v5.0.0. O sistema utiliza arquitetura modular com separação clara de responsabilidades para garantir manutenibilidade e extensibilidade.
 
 ## Arquitetura do Sistema
 
@@ -20,10 +16,59 @@ O PatientsOnFIRE (Patients On FHIR Information Retrieval Environment) é um sist
 - **Armazenamento**: Em memória (Map)
 - **Porta**: 3000 (configurável via PORT)
 
-### Cliente (CRUDEPatients)
-- **Tecnologia**: HTML5, CSS3, JavaScript (ES6+)
-- **Interface**: Aplicação web responsiva
-- **Comunicação**: Fetch API para requisições HTTP
+### Cliente (CRUDEPatients) - Arquitetura Modular
+O cliente utiliza arquitetura modular com separação clara de responsabilidades:
+
+#### **Estrutura por Camadas:**
+```
+client/js/
+├── app-main.js              # Ponto de entrada da aplicação
+├── config.js                # Configurações centralizadas
+├── components/              # Componentes reutilizáveis
+│   └── message-service.js   # Serviço de mensagens para usuário
+├── controllers/             # Controladores (MVC)
+│   └── patient-list-controller.js
+├── services/                # Camada de serviços
+│   └── api-service.js       # Comunicação com API
+└── utils/                   # Utilitários e helpers
+    ├── formatter.js         # Formatação de dados
+    └── patient-builder.js   # Construção/validação de entidades
+```
+
+#### **Princípios SOLID Aplicados:**
+
+1. **Single Responsibility Principle (SRP)**
+   - `ApiService`: Responsável apenas pela comunicação HTTP
+   - `MessageService`: Gerencia apenas notificações ao usuário
+   - `PatientBuilder`: Constrói e valida recursos Patient
+   - `Formatter`: Formata dados para exibição
+   - `PatientListController`: Controla apenas a lista de pacientes
+
+2. **Open/Closed Principle (OCP)**
+   - Classes extensíveis sem modificação do código base
+   - Novos formatadores podem ser adicionados sem alterar a classe existente
+   - Novos tipos de validação podem ser implementados
+
+3. **Liskov Substitution Principle (LSP)**
+   - Implementações de serviços podem ser substituídas sem quebrar funcionalidade
+   - Interfaces consistentes entre componentes
+
+4. **Interface Segregation Principle (ISP)**
+   - Métodos específicos e focados em cada classe
+   - Nenhuma classe força implementação de métodos desnecessários
+
+5. **Dependency Inversion Principle (DIP)**
+   - Dependências injetadas e configuráveis
+   - Baixo acoplamento entre módulos
+   - Configurações centralizadas em `config.js`
+
+#### **Padrões de Design Implementados:**
+
+- **Service Layer Pattern**: Separação da lógica de negócio (ApiService)
+- **Builder Pattern**: Construção de objetos Patient complexos (PatientBuilder)
+- **Singleton Pattern**: MessageService como instância única
+- **MVC Pattern**: Separação entre Model (Patient), View (HTML) e Controller
+- **Module Pattern**: Módulos ES6 com importações específicas
 
 ## Funcionalidades Implementadas
 
@@ -33,22 +78,11 @@ O PatientsOnFIRE (Patients On FHIR Information Retrieval Environment) é um sist
 - **Endpoint**: `POST /Patient`
 - **Descrição**: Cria um novo registro de paciente
 - **Resposta**: 201 Created com Location header
-- **Exemplo**:
-```json
-POST /Patient
-{
-  "resourceType": "Patient",
-  "name": [{"given": ["João"], "family": "Silva"}],
-  "gender": "male",
-  "active": true
-}
-```
 
 #### 2. READ - Ler Paciente
 - **Endpoint**: `GET /Patient/{id}`
 - **Descrição**: Recupera um paciente específico por ID
 - **Resposta**: 200 OK com dados do paciente
-- **Exemplo**: `GET /Patient/1`
 
 #### 3. UPDATE - Atualizar Paciente
 - **Endpoint**: `PUT /Patient/{id}`
@@ -71,26 +105,25 @@ POST /Patient
 #### Funcionalidades da Interface:
 
 1. **Lista de Pacientes**
-   - Visualização de todos os pacientes cadastrados
-   - Cartões informativos com dados principais
+   - Visualização com arquitetura MVC
+   - Controlador dedicado para gerenciamento de lista
+   - Cartões informativos com formatação consistente
    - Ações rápidas (Ver, Editar, Excluir)
 
 2. **Criar Paciente**
-   - Formulário intuitivo para cadastro
-   - Validação de campos obrigatórios
-   - Campos suportados: nome, sobrenome, gênero, data nascimento, telefone, email, endereço
+   - Formulário com validação robusta via PatientBuilder
+   - Construção de recursos FHIR padronizada
+   - Tratamento de erros centralizado
 
 3. **Buscar e Gerenciar**
-   - Busca por ID específico
-   - Visualização detalhada dos dados
-   - Edição inline com formulário
-   - Exclusão com confirmação
+   - Serviço de API dedicado para todas as operações
+   - Formatação de dados através da classe Formatter
+   - Estados de loading e erro bem definidos
 
 4. **Editor JSON**
-   - Criação/edição direta via JSON FHIR
-   - Template de exemplo
-   - Validação e formatação automática
-   - Suporte completo ao padrão FHIR v5.0.0
+   - Validação de esquema FHIR integrada
+   - Templates padronizados via PatientBuilder
+   - Formatação automática e validação em tempo real
 
 ## Estrutura do Projeto
 
@@ -103,7 +136,18 @@ patients-on-fire/
 ├── client/
 │   ├── index.html            # Interface principal
 │   ├── styles.css            # Estilos CSS
-│   └── app.js                # Lógica JavaScript do cliente
+│   └── js/                   # Arquitetura modular ES6
+│       ├── app-main.js       # Aplicação principal
+│       ├── config.js         # Configurações
+│       ├── components/       # Componentes reutilizáveis
+│       │   └── message-service.js
+│       ├── controllers/      # Controladores MVC
+│       │   └── patient-list-controller.js
+│       ├── services/         # Camada de serviços
+│       │   └── api-service.js
+│       └── utils/           # Utilitários
+│           ├── formatter.js
+│           └── patient-builder.js
 └── docs/
     └── api-examples.md       # Exemplos de uso da API
 ```
@@ -112,17 +156,14 @@ patients-on-fire/
 
 - **Node.js** v14+ 
 - **npm** v6+
-- Navegador web moderno (Chrome, Firefox, Safari, Edge)
+- Navegador web moderno com suporte a ES6 modules
 
 ## Instalação e Execução
 
 ### 1. Clonar/Extrair o projeto
 ```bash
-# Se usando Git
 git clone <repository-url>
 cd patients-on-fire
-
-# Ou extrair ZIP fornecido
 ```
 
 ### 2. Instalar dependências
@@ -193,7 +234,7 @@ curl -X DELETE http://localhost:3000/Patient/1
 
 ## Especificação FHIR v5.0.0
 
-O sistema implementa um subconjunto da especificação FHIR Patient v5.0.0, incluindo:
+O sistema implementa um subconjunto da especificação FHIR Patient v5.0.0:
 
 ### Campos Suportados:
 - `resourceType`: Sempre "Patient"
@@ -247,48 +288,6 @@ O sistema implementa um subconjunto da especificação FHIR Patient v5.0.0, incl
 - `422 Unprocessable Entity`: Dados válidos mas não processáveis
 - `500 Internal Server Error`: Erro interno do servidor
 
-## Validações Implementadas
-
-### Servidor:
-- Validação de resourceType = "Patient"
-- Validação de tipos de dados (arrays, objetos)
-- Validação de gênero (male, female, other, unknown)
-- Validação de IDs numéricos positivos
-- Validação de consistência identifier vs URL
-
-### Cliente:
-- Validação de campos obrigatórios nos formulários
-- Validação de formato JSON no editor
-- Validação de IDs numéricos
-- Confirmação para operações destrutivas (exclusão)
-
-## Recursos Adicionais
-
-### Interface Responsiva
-- Design adaptativo para desktop e mobile
-- Navegação por abas intuitiva
-- Feedback visual para todas as operações
-- Mensagens de status em tempo real
-
-### Tratamento de Erros
-- Mensagens de erro claras e específicas
-- Recuperação automática de falhas temporárias
-- Log de erros no console para debug
-
-### Experiência do Usuário
-- Loading states durante operações
-- Confirmações para ações críticas
-- Auto-refresh da lista após modificações
-- Estados vazios informativos
-
-## Limitações Conhecidas
-
-1. **Armazenamento**: Dados são perdidos ao reiniciar o servidor (apenas memória)
-2. **Concorrência**: Não há controle de concorrência entre múltiplos clientes
-3. **Autenticação**: Não implementada (fora do escopo do trabalho)
-4. **Campos FHIR**: Subconjunto limitado dos campos Patient completos
-5. **Persistência**: Para persistência real, seria necessário integrar banco de dados
-
 ## Tecnologias Utilizadas
 
 ### Backend:
@@ -300,11 +299,47 @@ O sistema implementa um subconjunto da especificação FHIR Patient v5.0.0, incl
 ### Frontend:
 - **HTML5**: Estrutura semântica
 - **CSS3**: Estilos modernos com Flexbox/Grid
-- **JavaScript ES6+**: Funcionalidades modernas (async/await, arrow functions)
-- **Fetch API**: Requisições HTTP assíncronas
+- **JavaScript ES6+**: Módulos nativos, classes, async/await
+- **Fetch API**: Requisições HTTP assíncronas via ApiService
+
+## Benefícios da Arquitetura
+
+### Manutenibilidade:
+- Código modular com responsabilidades bem definidas
+- Fácil localização e correção de bugs
+- Estrutura facilitada para testes
+
+### Extensibilidade:
+- Novos recursos podem ser adicionados sem impactar código existente
+- Padrões estabelecidos facilitam desenvolvimento futuro
+- Configurações centralizadas permitem customização simples
+
+### Legibilidade:
+- Código auto-documentado através de nomes significativos
+- Estrutura de arquivos intuitiva
+- Separação clara entre camadas de responsabilidade
+
+### Performance:
+- Carregamento lazy de módulos ES6
+- Reutilização eficiente de componentes
+- Gerenciamento otimizado de estado
+
+## Limitações Conhecidas
+
+1. **Armazenamento**: Dados perdidos ao reiniciar servidor (in-memory storage)
+2. **Concorrência**: Sem controle de concorrência entre múltiplos clientes
+3. **Autenticação**: Não implementada (fora do escopo)
+4. **Campos FHIR**: Subconjunto limitado da especificação completa
+5. **Persistência**: Para produção, requer integração com banco de dados
 
 ## Conclusão
 
-O sistema PatientsOnFIRE demonstra com sucesso a implementação de um sistema distribuído cliente/servidor seguindo os princípios REST e a especificação FHIR v5.0.0. A arquitetura modular permite fácil manutenção e extensão, enquanto a interface web oferece uma experiência de usuário intuitiva para gerenciamento completo de registros de pacientes.
+O sistema PatientsOnFIRE demonstra com sucesso a implementação de um sistema distribuído cliente/servidor seguindo os princípios REST e a especificação FHIR v5.0.0. A arquitetura modular resulta em:
 
-O projeto atende todos os requisitos especificados no trabalho prático, fornecendo uma base sólida para futuras extensões como persistência em banco de dados, autenticação, e funcionalidades avançadas de busca e relatórios.
+- **Código limpo** e fácil de manter
+- **Arquitetura robusta** e extensível
+- **Separação clara de responsabilidades**
+- **Reutilização eficiente** de componentes
+- **Facilidade para testes**
+
+A estrutura modular permite fácil extensão para funcionalidades avançadas como persistência em banco de dados, autenticação, busca avançada, e integração com outros sistemas FHIR, mantendo a qualidade e organização do código.

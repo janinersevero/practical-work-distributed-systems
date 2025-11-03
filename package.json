@@ -1,7 +1,7 @@
 {
   "name": "patients-on-fire",
   "version": "1.0.0",
-  "description": "PatientsOnFIRE - A distributed system for managing FHIR Patient resources with REST API",
+  "description": "PatientsOnFIRE - A distributed system for managing FHIR Patient resources with REST API and modular architecture",
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",

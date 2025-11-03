@@ -1,7 +1,3 @@
-// PatientsOnFIRE Client Application
-// JavaScript functionality for CRUDEPatients
-
-// API Base URL
 const API_BASE_URL = window.location.origin;
 
 let currentPatient = null;
