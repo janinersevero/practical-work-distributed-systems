@@ -1,6 +1,7 @@
 # PatientsOnFIRE - Sistema Distribuído de Gerenciamento de Pacientes
 
 **Trabalho Prático de Sistemas Distribuídos - UFCSPA** 
+
 **Disciplina:** Fundamento de Redes e Sistemas Distribuídos - 2025/02 
 
 ## Visão Geral
@@ -34,41 +35,6 @@ client/js/
     ├── formatter.js         # Formatação de dados
     └── patient-builder.js   # Construção/validação de entidades
 ```
-
-#### **Princípios SOLID Aplicados:**
-
-1. **Single Responsibility Principle (SRP)**
-   - `ApiService`: Responsável apenas pela comunicação HTTP
-   - `MessageService`: Gerencia apenas notificações ao usuário
-   - `PatientBuilder`: Constrói e valida recursos Patient
-   - `Formatter`: Formata dados para exibição
-   - `PatientListController`: Controla apenas a lista de pacientes
-
-2. **Open/Closed Principle (OCP)**
-   - Classes extensíveis sem modificação do código base
-   - Novos formatadores podem ser adicionados sem alterar a classe existente
-   - Novos tipos de validação podem ser implementados
-
-3. **Liskov Substitution Principle (LSP)**
-   - Implementações de serviços podem ser substituídas sem quebrar funcionalidade
-   - Interfaces consistentes entre componentes
-
-4. **Interface Segregation Principle (ISP)**
-   - Métodos específicos e focados em cada classe
-   - Nenhuma classe força implementação de métodos desnecessários
-
-5. **Dependency Inversion Principle (DIP)**
-   - Dependências injetadas e configuráveis
-   - Baixo acoplamento entre módulos
-   - Configurações centralizadas em `config.js`
-
-#### **Padrões de Design Implementados:**
-
-- **Service Layer Pattern**: Separação da lógica de negócio (ApiService)
-- **Builder Pattern**: Construção de objetos Patient complexos (PatientBuilder)
-- **Singleton Pattern**: MessageService como instância única
-- **MVC Pattern**: Separação entre Model (Patient), View (HTML) e Controller
-- **Module Pattern**: Módulos ES6 com importações específicas
 
 ## Funcionalidades Implementadas
 
@@ -301,36 +267,6 @@ O sistema implementa um subconjunto da especificação FHIR Patient v5.0.0:
 - **CSS3**: Estilos modernos com Flexbox/Grid
 - **JavaScript ES6+**: Módulos nativos, classes, async/await
 - **Fetch API**: Requisições HTTP assíncronas via ApiService
-
-## Benefícios da Arquitetura
-
-### Manutenibilidade:
-- Código modular com responsabilidades bem definidas
-- Fácil localização e correção de bugs
-- Estrutura facilitada para testes
-
-### Extensibilidade:
-- Novos recursos podem ser adicionados sem impactar código existente
-- Padrões estabelecidos facilitam desenvolvimento futuro
-- Configurações centralizadas permitem customização simples
-
-### Legibilidade:
-- Código auto-documentado através de nomes significativos
-- Estrutura de arquivos intuitiva
-- Separação clara entre camadas de responsabilidade
-
-### Performance:
-- Carregamento lazy de módulos ES6
-- Reutilização eficiente de componentes
-- Gerenciamento otimizado de estado
-
-## Limitações Conhecidas
-
-1. **Armazenamento**: Dados perdidos ao reiniciar servidor (in-memory storage)
-2. **Concorrência**: Sem controle de concorrência entre múltiplos clientes
-3. **Autenticação**: Não implementada (fora do escopo)
-4. **Campos FHIR**: Subconjunto limitado da especificação completa
-5. **Persistência**: Para produção, requer integração com banco de dados
 
 ## Conclusão
 
